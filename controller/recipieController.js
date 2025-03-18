@@ -5,8 +5,7 @@ import dotenv  from 'dotenv';
 import mongoose from "mongoose";
 import userModel from "../models/userModel.js";
 
-dotenv.config()
-
+dotenv.config();
 const genAi= new  GoogleGenerativeAI(process.env.API_KEY )
 
 
@@ -22,7 +21,6 @@ export const createRecipieController = async (req, res) => {
         } = req.body;
         
         const image = req.file;
-
         console.log(req.user)
         const author = req.user?.id;
         
@@ -128,6 +126,54 @@ export const getAllRecipieController = async (req,res)=>{
         })
     }
 }
+
+export const getPopularRecipieController = async(req,res)=>{
+    try {
+        const recipies = await recipieModel.find({})
+        .select("-photo")
+        .populate('author')
+        .sort({likeCount:-1});
+
+        res.status(200).send({
+            success:true,
+            message:"All Recipes",
+            recipies,
+        });
+        
+    } catch (error) {
+        console.log("Uanable to find all products ")
+        res.status(400).send({
+            sucess:false,
+            message:"Unable to find all products",
+            error
+        })
+    }
+}
+
+export const recentRecipeController= async(req,res)=>{
+    try {
+        const recipies = await recipieModel.find({})
+        .select("-photo")
+        .populate('author')
+        .sort({createdAt:-1});
+
+        res.status(200).send({
+            success:true,
+            message:"All Recipes",
+            recipies,
+        });
+        
+    } catch (error) {
+        console.log("Uanable to find recent recipes ")
+        res.status(400).send({
+            success:false,
+            message:"Unable to find recent recipes",
+            error
+        })
+    }
+}
+
+
 
 export const getRecipieImage = async(req,res)=>{
     try {

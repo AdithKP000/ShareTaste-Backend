@@ -1,5 +1,7 @@
 import express from "express";
-import {approveRequestController, createRecipieController, getAllRecipieController, getPendingRecipieController, getRecipieController, getRecipieImage, getUserRecipieController, likeRecipieController, searchRecipeController, unlikeRecipieController} from './../controller/recipieController.js';
+import {approveRequestController, createRecipieController, getAllRecipieController, getPendingRecipieController, 
+    getPopularRecipieController, 
+    getRecipieController, getRecipieImage, getUserRecipieController, likeRecipieController, recentRecipeController, searchRecipeController, unlikeRecipieController} from './../controller/recipieController.js';
 import upload from "../middlewares/uploadMiddleware.js";
 import { requireSignIn } from "../middlewares/authMiddleware.js";
 
@@ -15,10 +17,14 @@ router.get('/getimage/:recipieId',getRecipieImage)
 
 router.get('/getAllRecipie',getAllRecipieController)
 
+//get popular recipe
+router.get('/popularRecipie',getPopularRecipieController)
+
 
 //get single recipie
 router.get('/getRecipie/:recipieId',getRecipieController)
-
+//get recent recipe
+router.get('/recentRecipe',recentRecipeController)
 
 
 //get recipie created by one person using authorId

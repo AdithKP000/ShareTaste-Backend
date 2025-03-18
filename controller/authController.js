@@ -4,6 +4,7 @@ import JWT from "jsonwebtoken";
 import transporter from "../config/nodemailer.js";
 import dotenv from "dotenv";
 import { Console, error } from "console";
+import recipieModel from "../models/recipieModel.js";
 
 dotenv.config()
 
@@ -16,7 +17,7 @@ const genrateOtp=()=>{
 // User Registration Controller
 export const registerController = async (req, res) => {
     try {
-        const { name, email, password} = req.body;
+        const { name, email, password } = req.body;
         const otp=genrateOtp();
     
 
@@ -916,4 +917,41 @@ export const removeSavedRecipieController= async(req,res)=>{
     }
 }
 
+export const getSavedRecipeController = async (req, res) => {
+    try {
+        const { recipeIds } = req.body;
+
+        // Validate input
+        if (!recipeIds || !Array.isArray(recipeIds) || recipeIds.length === 0) {
+            return res.status(400).send({
+                success: false,
+                message: "Invalid or empty recipe ID list",
+            });
+        }
+
+        // Fetch recipes from the database
+        const recipes = await recipieModel.find({ _id: { $in: recipeIds } });
+
+        if (!recipes || recipes.length === 0) {
+            return res.status(404).send({
+                success: false,
+                message: "No saved recipes found",
+            });
+        }
+
+        res.status(200).send({
+            success: true,
+            message: "Found saved recipes",
+            recipes,
+        });
+
+    } catch (error) {
+        console.error("Error fetching saved recipes:", error);
+        res.status(500).send({
+            success: false,
+            message: "Unable to get saved recipes",
+            error: error.message,
+        });
+    }
+};
 

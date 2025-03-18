@@ -1,4 +1,6 @@
 import express from "express";
+import bodyParser from "body-parser";
+
 import colors from "colors";
 import dotenv from "dotenv";
 import connectDB from './config/db.js';
@@ -16,6 +18,8 @@ connectDB();
 
 // Initialize Express app
 const app = express();
+app.use(bodyParser.json());  // Parses JSON request body
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Middlewares
 app.use(express.json());

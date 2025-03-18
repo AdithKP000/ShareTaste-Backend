@@ -7,7 +7,8 @@ import {
       approveChefController,
       saveRecipieController,
       removeSavedRecipieController,
-      getAllChefController
+      getAllChefController,
+      getSavedRecipeController
     
     } from '../controller/authController.js';
 
@@ -46,7 +47,7 @@ router.get('/user-auth',requireSignIn,(req,res)=>{
 router.get('/profile/:id',isLoggedIn,requireSignIn,profileController,)
 
 
-router.post('/upload', upload.single('image'),userAuth,isVerified,uploadImage);
+router.post('/upload', upload.single('image'),userAuth,uploadImage);
 router.get('/user/:userId',userAuth,getImage);
 router.get('/getphoto',userAuth,getUploadForm)
 
@@ -62,6 +63,8 @@ router.get("/getAllChef", getAllChefController)
 router.put('/saveRecipies/:userId',requireSignIn,saveRecipieController)
 //remove saved recipies
 router.put('/removeSavedRecipes/:userId', requireSignIn,removeSavedRecipieController )
+//get Saved Recipes
+router.post('/getSavedRecipes',getSavedRecipeController)
 
 //chef routes
 router.get('/createChef' ,userAuth,createChefController)
