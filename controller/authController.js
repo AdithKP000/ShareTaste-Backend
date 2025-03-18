@@ -620,6 +620,30 @@ export const getAllChefController = async(req,res)=>{
     }
 }
 
+export const getChefImgController = async(req,res)=>{
+    try {
+        const {chefId} = req.params;    
+        if (!chefId) {
+            return res.status(400).json({
+                success: false,
+                message: 'chef ID is required'
+            });
+
+        }   
+        const chef= await userModel.findById(chefId)
+        if (!chef || !chef.image || !chef.image.data) {
+            return res.status(404).json({
+              success: false,
+              message: 'Image not found'
+            });
+          }
+          res.set('Content-Type', chef.image.contentType);
+          res.send(chef.image.data);
+
+    } catch (error) {
+        console.log(error);
+    }
+}
 
     // for a user to be regitered as a Chef
 export const createChefController = async(req,res)=>{

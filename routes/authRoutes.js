@@ -8,7 +8,8 @@ import {
       saveRecipieController,
       removeSavedRecipieController,
       getAllChefController,
-      getSavedRecipeController
+      getSavedRecipeController,
+      getChefImgController
     
     } from '../controller/authController.js';
 
@@ -57,7 +58,7 @@ router.get('/allUsers',getAllUserController)
 
 //get all chefs
 router.get("/getAllChef", getAllChefController)
-
+router.get("/chefimg/:chefId",getChefImgController)
 
 //save recipies to user model
 router.put('/saveRecipies/:userId',requireSignIn,saveRecipieController)
