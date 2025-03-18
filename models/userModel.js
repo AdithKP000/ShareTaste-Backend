@@ -44,7 +44,13 @@ const userSchema = new mongoose.Schema({
     },
   
     address:{
+        type: String,
+        
+    },
+    description:{
         type:String,
+        trim: true,
+        maxlength: 500, //max length of the descriprion of the
      
     },
     alergies:{

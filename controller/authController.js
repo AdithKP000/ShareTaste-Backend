@@ -222,6 +222,7 @@ export const loginController = async (req, res) => {
                 approvalStatus:user.approvalStatus,
                 licenseNumber:user.licenseNumber,
                 verified:user.verified,
+                description:user.description,
                 
             },
             token,
@@ -380,7 +381,7 @@ export const resetUserPassword = async (req, res) => {
     }
 };
 
-
+// find single user
 export const findOneController=async(req,res)=>{
     try {
         const {email}=req.body;
@@ -394,6 +395,7 @@ export const findOneController=async(req,res)=>{
                     res.json("Unable to find the user with the given credentials")
                     console.log("Unable to find user");
                 }
+            
 
                 res.status(200).json({
                     success: true,
@@ -407,6 +409,7 @@ export const findOneController=async(req,res)=>{
                         alergies:user.alergies,
                         dietaryPreferences:user.dietaryPreferences,
                         isVerified:user.isVerified,
+                        description:user.description,
                     },
                 });
             
@@ -421,10 +424,52 @@ export const findOneController=async(req,res)=>{
 }
 
 
+export const getSingleUserController= async(req,res)=>{
+    try {
+        const {userId}= req.params;
+        if(!userId)
+        {
+            console.log("userId Is not recieved");
+            res.status(400).send({
+                success:false,
+                message:"Unable to get userID"
+            })
+        }
+
+        
+            const user= await userModel.findById(userId);
+            if(!user)
+            {
+                console.log("Unable to find the user")
+                res.status(400).send({
+                    success:false,
+                message:"Unable to get user"
+                })
+            }
+
+            res.status(200).send({
+                success:true,
+                message:"Succesfully obtaiend user",
+                user,
+            })
+
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            success:false,
+            message:"Unable to find the details of the specific user",
+            error,
+        })
+    }
+}
+
+
+
 
 export const updateUserController = async (req, res) => {
     try {
-      const { name, address, alergies, dietaryPreferences } = req.body;
+      const { name, address, alergies, dietaryPreferences , description} = req.body;
       const userId = req.params.id; // Correcting the parameter name
   
       let user = await userModel.findById(userId);
@@ -440,7 +485,7 @@ export const updateUserController = async (req, res) => {
       user.address = address || user.address;
       user.alergies = alergies || user.alergies;
       user.dietaryPreferences = dietaryPreferences || user.dietaryPreferences;
-  
+      user.description=description||user.description
       await user.save(); // Save the updated user
   
       res.status(200).send({

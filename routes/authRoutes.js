@@ -9,7 +9,8 @@ import {
       removeSavedRecipieController,
       getAllChefController,
       getSavedRecipeController,
-      getChefImgController
+      getChefImgController,
+      getSingleUserController
     
     } from '../controller/authController.js';
 
@@ -38,6 +39,7 @@ router.post('/reset-user-password',resetUserPassword) //to verify OTP and update
 //find one by email
 router.post('/findOne',findOneController)
 
+router.get('/getUser/:userId',getSingleUserController)
 
 router.get('/test',requireSignIn,isAdmin,testController)
     
