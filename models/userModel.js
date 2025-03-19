@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true, 
         unique: true,  
-        trim: true,      // Removes whitespace around the name
+        trim: true,      // Removes whitespace around the name  Adith KPO
         minlength: 3,   
         maxlength: 50,   
     },

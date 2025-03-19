@@ -174,6 +174,41 @@ export const recentRecipeController= async(req,res)=>{
 }
 
 
+export const getSimilarRecipeController = async(req,res)=>{
+    try {
+        const {rid}=req.params;
+        const {cid}= req.params;
+        if(!cid){
+            console.log("Unable to get Category ID");
+            res.status(400).send({success:false, message:"Unable to find Cat ID"})
+        }
+
+        const recipies= await recipieModel.find({category:cid,  _id: { $ne: rid }} );
+        if(!recipies)
+        {   console.log("Unable to find  Recipies")
+            res.status(400).send({
+                success:false,
+                message:"Unable to find Thre  recipies with the given category"
+                })
+        }
+        res.status(200).send({
+            success:true,
+            message:"Succesfully found similar Recipies",
+            recipies,
+        })
+
+
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            success:false,
+            message:"Unable to find similar recipes",
+            error,
+        })
+    }
+}
+
 
 export const getRecipieImage = async(req,res)=>{
     try {

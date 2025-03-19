@@ -81,24 +81,36 @@ export const categoryController=async(req,res)=>{
 
 
 
-export const singleCategoryController=async (req,res)=>{
+export const singleCategoryController = async (req, res) => {
     try {
-        
-        const singleCategory=await categoryModel.findOne({slug:slugify(req.params.slug)})
+        const { catId } = req.params;
+        if (!catId) {
+            return res.status(400).send({
+                success: false,
+                message: "Category ID is required",
+            });
+        }
+        const singleCategory = await categoryModel.findById(catId);
+        if (!singleCategory) {
+            return res.status(404).send({
+                success: false,
+                message: "Category not found",
+            });
+        }
         res.status(200).send({
-            success:true,
-            message:"User Found Succesfully",
+            success: true,
+            message: "Category found successfully",
             singleCategory,
-        })
+        });
     } catch (error) {
-        console.log(error);
-        res.status(401).send({
-            success:false,
-            message:"Error in finding required user",
-            error,
-        })
+        console.error("Error fetching category:", error);
+        res.status(500).send({
+            success: false,
+            message: "Error fetching category",
+            error: error.message,  // Send only the message to avoid exposing sensitive data
+        });
     }
-}
+};
 
 
 export const deleteCategoryControlelr=async (req,res)=>{

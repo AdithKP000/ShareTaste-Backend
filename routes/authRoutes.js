@@ -50,6 +50,7 @@ router.get('/user-auth',requireSignIn,(req,res)=>{
 router.get('/profile/:id',isLoggedIn,requireSignIn,profileController,)
 
 
+//image Upload API Endpoints
 router.post('/upload', upload.single('image'),userAuth,uploadImage);
 router.get('/user/:userId',userAuth,getImage);
 router.get('/getphoto',userAuth,getUploadForm)

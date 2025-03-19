@@ -6,11 +6,12 @@ import dotenv from "dotenv";
 import connectDB from './config/db.js';
 import morgan from "morgan";
 import cors from 'cors';
-import cookieParser from "cookie-parser";  // ✅ Required to parse cookies
+import cookieParser from "cookie-parser";  // Required to parse cookies
 import authRoutes from "./routes/authRoutes.js";
 import recipieRoutes from "./routes/recipieRoutes.js"
 import categoryRoutes from "./routes/categoryRoutes.js"
 // Load environment variables
+
 dotenv.config();
 
 // Database connection
@@ -26,10 +27,10 @@ app.use(express.json());
 app.use(cookieParser());  // ✅ Allows access to cookies in requests
 app.use(morgan('dev'));
 
-// ✅ Configure CORS properly (if using cookies for authentication)
+// Configure CORS properly (if using cookies for authentication)
 app.use(cors({
     origin: process.env.FRONTEND_URL || "http://localhost:3000", // Allow frontend requests
-    credentials: true // ✅ Allow cookies to be sent
+    credentials: true //  Allow cookies to be sent
 }));
 
 // API routes
