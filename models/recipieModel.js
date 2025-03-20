@@ -46,6 +46,10 @@ name: {
         data: Buffer,
         contentType: String
     },
+    bannerImage: {
+        data: Buffer,
+        contentType: String,
+      },
     ratings: {
         type: [Number], 
         default: []

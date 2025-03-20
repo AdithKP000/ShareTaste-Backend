@@ -1,6 +1,7 @@
 import express from "express";
 import {approveRequestController, createRecipieController, getAllRecipieController, getPendingRecipieController, 
     getPopularRecipieController, 
+    getRecipieBannerImage, 
     getRecipieController, getRecipieImage, getSimilarRecipeController, getUserRecipieController, likeRecipieController, recentRecipeController, searchRecipeController, unlikeRecipieController} from './../controller/recipieController.js';
 import upload from "../middlewares/uploadMiddleware.js";
 import { requireSignIn } from "../middlewares/authMiddleware.js";
@@ -13,6 +14,8 @@ const router=express.Router()
 
 router.post('/createRecipie' ,upload.single('image'), requireSignIn,createRecipieController)
 router.get('/getimage/:recipieId',getRecipieImage)
+router.get('/getBanner/:recipieId',getRecipieBannerImage)
+
 
 
 router.get('/getAllRecipie',getAllRecipieController)

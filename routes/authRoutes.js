@@ -10,7 +10,8 @@ import {
       getAllChefController,
       getSavedRecipeController,
       getChefImgController,
-      getSingleUserController
+      getSingleUserController,
+      getBannerImg
     
     } from '../controller/authController.js';
 

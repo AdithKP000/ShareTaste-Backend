@@ -111,11 +111,11 @@ export const sendOTP=async(req,res)=>{
         })
     }
 }
-
 //verify user
 export const verifyUser= async (req,res)=>{
     try { 
         const{userId,otp}=req.body
+        console.log(userId)
             if(!userId || !otp)
             {
                 return res.json({
@@ -125,6 +125,9 @@ export const verifyUser= async (req,res)=>{
             }
             try {
                 const user= await userModel.findById(userId);
+
+                console.log(user.otp);
+
 
                 if(!user)
                 {return res.json({success:false, message:error.message})}
@@ -563,38 +566,73 @@ export const uploadImage = async (req, res) => {
   };
   
   
-    export const getImage = async (req, res) => {
-        try {
-            const { userId } = req.body; // Extract userId properly
+  export const getImage = async (req, res) => {
+    try {
+        const { userId } = req.body; // Extract userId properly
 
 
-            if (!userId) {
-                return res.status(400).json({
-                    success: false,
-                    message: 'User ID is required'
-                });
-            }
-    
-            const user = await userModel.findById(userId);
-      
-          if (!user || !user.image || !user.image.data) {
-            return res.status(404).json({
-              success: false,
-              message: 'Image not found'
+        if (!userId) {
+            return res.status(400).json({
+                success: false,
+                message: 'User ID is required'
             });
-          }
-      
-          res.set('Content-Type', user.image.contentType);
-          res.send(user.image.data);
-        } catch (error) {
-          console.error('Get image error:', error);
-          res.status(500).json({
-            success: false,
-            message: 'Error retrieving image',
-            error: error.message
-          });
         }
-      };
+
+        const user = await userModel.findById(userId);
+  
+      if (!user || !user.image || !user.image.data) {
+        return res.status(404).json({
+          success: false,
+          message: 'Image not found'
+        });
+      }
+  
+      res.set('Content-Type', user.image.contentType);
+      res.send(user.image.data);
+    } catch (error) {
+      console.error('Get image error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error retrieving image',
+        error: error.message
+      });
+    }
+  };
+            export const getBannerImg= async(req,res)=>{
+                try {
+                    const { userId } = req.params;
+            
+                    if (!userId) {
+                        return res.status(400).json({
+                            success: false,
+                            message: 'User ID is required'
+                        });
+                    }
+            
+                    const user = await userModel.findById(userId);
+            
+                    if (!user || !user.bannerImage || !user.bannerImage.data) {
+                        return res.status(404).json({
+                          success: false,
+                          message: 'Image not found'
+                        });
+                      }
+            
+                      res.set('Content-Type', user.bannerImage.contentType);
+                      res.send(user.bannerImage.data);
+            
+                } catch (error) {
+                    console.log(error);
+                    res.status(500).send({
+                        success:false,
+                        message:"Unable to fetch the user Image",
+                        error,
+                    })
+                }
+            }
+
+
+
     export const getUploadForm= (req, res) => {
       res.send(`
         <form action="/api/upload" method="post" enctype="multipart/form-data">

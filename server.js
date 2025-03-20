@@ -23,7 +23,21 @@ app.use(bodyParser.json());  // Parses JSON request body
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // Middlewares
-app.use(express.json());
+app.use(express.json({
+    verify: (req, res, buf) => {
+        try {
+          JSON.parse(buf);
+        } catch (e) {
+          res.status(400).send({
+            success: false,
+            message: 'Invalid JSON payload',
+            error: e.message
+          });
+          throw new Error('Invalid JSON');
+        }
+      }
+
+}));
 app.use(cookieParser());  // ✅ Allows access to cookies in requests
 app.use(morgan('dev'));
 

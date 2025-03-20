@@ -127,6 +127,16 @@ export const getAllRecipieController = async (req,res)=>{
     }
 }
 
+
+export const getRecipieBannerImage = async(req,res)=>{
+    try {
+        
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
 export const getPopularRecipieController = async(req,res)=>{
     try {
         const recipies = await recipieModel.find({})

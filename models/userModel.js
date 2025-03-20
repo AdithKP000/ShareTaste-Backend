@@ -3,11 +3,21 @@ import path from "path";
 import validator from "validator"
 import fs from "fs"
 import { fileURLToPath } from "url";
-import { type } from "os";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Load default images
+const defaultImagePath = path.join(__dirname, "defaults", "default-profile.jpg");
+const defaultBannerPath = path.join(__dirname, "defaults", "default-banner.jpg");
+
+const defaultImage = fs.existsSync(defaultImagePath)
+    ? fs.readFileSync(defaultImagePath)
+    : null;
+
+const defaultBannerImage = fs.existsSync(defaultBannerPath)
+    ? fs.readFileSync(defaultBannerPath)
+    : null;
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -91,7 +101,11 @@ const userSchema = new mongoose.Schema({
     }],
     image: {
         data: Buffer,
-        contentType: String
+        contentType: String,
+      },
+      bannerImage: {
+        data: Buffer,
+        contentType: String,
       },
       approvalStatus: {
          type: String,
@@ -106,5 +120,15 @@ const userSchema = new mongoose.Schema({
       
 
 },{timestamps:true})
+
+userSchema.pre("save", function (next) {
+    if (!this.image.data) {
+        this.image = { data: defaultImage, contentType: "image/jpeg" };
+    }
+    if (!this.bannerImage.data) {
+        this.bannerImage = { data: defaultBannerImage, contentType: "image/jpeg" };
+    }
+    next();
+});
 
 export default mongoose.model('user',userSchema)
