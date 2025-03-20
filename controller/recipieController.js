@@ -338,7 +338,7 @@ export const searchRecipeController= async( req,res)=>{
     const userAllergens = user.alergies;
     console.log(userAllergens)
 
-        const resutls = await recipieModel
+        const results = await recipieModel
        .find({ $and: [
         {
             $or: [
@@ -353,7 +353,14 @@ export const searchRecipeController= async( req,res)=>{
     ]
             })
         .select("-photo");
-        res.json(resutls);
+       
+            res.status(200).send({
+                success: true,
+                message:"succesfully Found Recipeis",
+                results,
+            })
+        
+        
       } catch (error) {
         console.log(error);
         res.status(400).send({
