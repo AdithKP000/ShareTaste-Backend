@@ -648,15 +648,16 @@ export const uploadImage = async (req, res) => {
 
     export const getAllUserController = async(req,res)=>{
         try {
-                const data= await userModel.find().select("-image,-otp,otpExpires,resertPassword,resetPasswordOtpExpires").sort({createdAt:-1})
+                const users= await userModel.find()
+                .select("-image,-otp,otpExpires,resertPassword,resetPasswordOtpExpires")
                 
-                if(!data){
+                if(!users){
                     console.log("Unable to fetch all")
                 }
                 res.status(200).send({
                     success:true,
                     message:"Succesfully Found  ALL users ! ",
-                    data,
+                    users,
                 })
 
         } catch (error) {
@@ -677,6 +678,7 @@ export const uploadImage = async (req, res) => {
 export const getAllChefController = async(req,res)=>{
     try {
         const chefs= await userModel.find({approvalStatus:'approved'})
+        .select("-image  -otp -otpExpires -resertPassword -resetPasswordOtpExpires -address -description -alergies  -dietaryPreferences -savedRecipies -bannerImage  ")
 
         if(!chefs)
         {
@@ -713,7 +715,9 @@ export const getChefImgController = async(req,res)=>{
             });
 
         }   
-        const chef= await userModel.findById(chefId)
+        const chef= await userModel.findById(chefId)        
+        .select("-otp -otpExpires -resertPassword -resetPasswordOtpExpires -address -description -alergies  -dietaryPreferences -savedRecipies -bannerImage -email  -password    ")
+
         if (!chef || !chef.image || !chef.image.data) {
             return res.status(404).json({
               success: false,

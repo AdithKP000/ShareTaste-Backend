@@ -107,8 +107,7 @@ export const createRecipieController = async (req, res) => {
 export const getAllRecipieController = async (req,res)=>{
     try {
         const recipies = await recipieModel.find({})
-        .select("-photo")
-        .populate('author')
+        .select("-image -ratings -ingredients -instructions -cookingTime -difficulty -category -allergens -dietaryPreferences -ratings -avgRating -approvalStatus -verified -likeCount -likedBy  ")
         .sort({createdAt:-1});
 
         res.status(200).send({
@@ -140,8 +139,7 @@ export const getRecipieBannerImage = async(req,res)=>{
 export const getPopularRecipieController = async(req,res)=>{
     try {
         const recipies = await recipieModel.find({})
-        .select("-photo")
-        .populate('author')
+        .select("-image -ratings -ingredients -instructions -cookingTime -difficulty -category -allergens -dietaryPreferences -ratings -avgRating -approvalStatus -verified -likeCount -likedBy  ")
         .sort({likeCount:-1});
 
         res.status(200).send({
@@ -163,8 +161,7 @@ export const getPopularRecipieController = async(req,res)=>{
 export const recentRecipeController= async(req,res)=>{
     try {
         const recipies = await recipieModel.find({})
-        .select("-photo")
-        .populate('author')
+        .select("-image -ratings -ingredients -instructions -cookingTime -difficulty -category -allergens -dietaryPreferences -ratings -avgRating -approvalStatus -verified -likeCount -likedBy  ")
         .sort({createdAt:-1});
 
         res.status(200).send({
@@ -193,7 +190,10 @@ export const getSimilarRecipeController = async(req,res)=>{
             res.status(400).send({success:false, message:"Unable to find Cat ID"})
         }
 
-        const recipies= await recipieModel.find({category:cid,  _id: { $ne: rid }} );
+        const recipies= await recipieModel.find({category:cid,  _id: { $ne: rid }} ) 
+        .select("-image -ratings -ingredients -instructions -cookingTime -difficulty -category -allergens -dietaryPreferences -ratings -avgRating -approvalStatus -verified -likeCount -likedBy  ");
+
+        
         if(!recipies)
         {   console.log("Unable to find  Recipies")
             res.status(400).send({
@@ -229,7 +229,8 @@ export const getRecipieImage = async(req,res)=>{
                         message: 'recipie ID is required'
                     });
                 }
-                const recipie = await recipieModel.findById(recipieId);
+                const recipie = await recipieModel.findById(recipieId)
+                .select("--ratings -ingredients -instructions -cookingTime -difficulty -category -allergens -dietaryPreferences -ratings -avgRating -approvalStatus -verified -likeCount -likedBy  ");
           
               if (!recipie || !recipie.image || !recipie.image.data) {
                 return res.status(404).json({
