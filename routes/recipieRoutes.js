@@ -2,7 +2,8 @@ import express from "express";
 import {approveRequestController, createRecipieController, getAllRecipieController, getPendingRecipieController, 
     getPopularRecipieController, 
     getRecipieBannerImage, 
-    getRecipieController, getRecipieImage, getSimilarRecipeController, getUserRecipieController, likeRecipieController, recentRecipeController, searchRecipeController, unlikeRecipieController} from './../controller/recipieController.js';
+    getRecipieController, getRecipieImage, getSimilarRecipeController, getUserRecipieController, likeRecipieController, recentRecipeController, searchRecipeController, unlikeRecipieController, getRecipieByUserNameController, searchByCategoryController,
+    searchByExactIngredientsController, searchByPartialIngredientsController} from './../controller/recipieController.js';
 import upload from "../middlewares/uploadMiddleware.js";
 import { requireSignIn } from "../middlewares/authMiddleware.js";
 
@@ -35,6 +36,14 @@ router.get('/similarRecipe/:rid/:cid',getSimilarRecipeController)
 //get recipie created by one person using authorId
 router.get('/getRecipieByUser/:userId',getUserRecipieController)
 
+router.get('/search-by-username/:userName', requireSignIn, getRecipieByUserNameController);
+
+router.get('/searchByCategory/:keyword', requireSignIn, searchByCategoryController);
+
+router.post('/searchByExactIngredients', requireSignIn, searchByExactIngredientsController);
+
+// Find recipes containing at least these ingredients (plus others)
+router.post('/searchByPartialIngredients', requireSignIn, searchByPartialIngredientsController);
 
 //searching recipies
 router.get('/searchRecipies/:keyword',requireSignIn, searchRecipeController);
