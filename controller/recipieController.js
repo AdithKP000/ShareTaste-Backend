@@ -698,3 +698,28 @@ export const searchRecipeController= async( req,res)=>{
             });
         }
     };
+
+export const deleteRecipeController = async(req,res)=>{
+    try {
+        const{id}= req.params;
+        const recipe = await recipieModel.findByIdAndDelete(id);
+        if(!recipe)
+        {
+            console.log("Unable to delete user")
+        }
+        res.status(200).send({
+            success:true,
+            message:"Succesfully Deleted Recipe",
+            recipe
+
+        })
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            success:false,
+            message:'Unable to delet user',
+            error,
+        })
+    }
+}

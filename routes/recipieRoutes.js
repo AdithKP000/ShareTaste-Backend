@@ -3,7 +3,8 @@ import {approveRequestController, createRecipieController, getAllRecipieControll
     getPopularRecipieController, 
     getRecipieBannerImage, 
     getRecipieController, getRecipieImage, getSimilarRecipeController, getUserRecipieController, likeRecipieController, recentRecipeController, searchRecipeController, unlikeRecipieController, getRecipieByUserNameController, searchByCategoryController,
-    searchByExactIngredientsController, searchByPartialIngredientsController} from './../controller/recipieController.js';
+    searchByExactIngredientsController, searchByPartialIngredientsController,
+    deleteRecipeController} from './../controller/recipieController.js';
 import upload from "../middlewares/uploadMiddleware.js";
 import { requireSignIn } from "../middlewares/authMiddleware.js";
 
@@ -60,4 +61,7 @@ router.put('/approveRecipieRequest/:id',approveRequestController)
 router.put('/likeRecipie/:id',requireSignIn,likeRecipieController)
 //unclike counter
 router.put('/unlikeCounter/:id',requireSignIn,unlikeRecipieController)
+
+//delete recipes
+router.delete('/deletRecipe/:id',deleteRecipeController)
 export default router;
