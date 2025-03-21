@@ -612,26 +612,34 @@ export const searchRecipeController= async( req,res)=>{
     
             // Clean ingredients array (remove empty strings, trim whitespace)
             const cleanedIngredients = ingredients
-                .map(ing => ing.trim())
+                .map(ing => ing.trim().toLowerCase())
                 .filter(ing => ing.length > 0);
     
             // Find the user to check for allergens
             const user = await userModel.findById(userId);
             const userAllergens = user?.alergies || [];
             
-            // Find recipes that have EXACTLY these ingredients
-            // This means the recipe's ingredients array length must match
-            // and all the ingredients must be in our search list
-            const results = await recipieModel.find({
-                $and: [
-                    // All ingredients must be from our list
-                    { ingredients: { $not: { $elemMatch: { $nin: cleanedIngredients } } } },
-                    // Recipe must use all of our ingredients
-                    { ingredients: { $size: cleanedIngredients.length } },
-                    // Exclude recipes with allergens
-                    { ingredients: { $nin: userAllergens } }
-                ]
+            // Create regex patterns for substring matching
+            const ingredientPatterns = cleanedIngredients.map(ing => new RegExp(ing, 'i'));
+            
+            // Get all recipes
+            const allRecipes = await recipieModel.find({
+                ingredients: { $nin: userAllergens }
             }).select("-photo");
+            
+            // Filter recipes manually to find ones with exactly the ingredients we want
+            const results = allRecipes.filter(recipe => {
+                const recipeIngredients = recipe.ingredients.map(ing => ing.toLowerCase());
+                
+                // Check if recipe has exactly the right number of ingredients
+                if (recipeIngredients.length !== cleanedIngredients.length) return false;
+                
+                // Check if each search term matches at least one recipe ingredient
+                return cleanedIngredients.every(searchIngredient => {
+                    return recipeIngredients.some(recipeIngredient => 
+                        recipeIngredient.includes(searchIngredient));
+                });
+            });
             
             res.status(200).send({
                 success: true,
@@ -665,23 +673,28 @@ export const searchRecipeController= async( req,res)=>{
     
             // Clean ingredients array (remove empty strings, trim whitespace)
             const cleanedIngredients = ingredients
-                .map(ing => ing.trim())
+                .map(ing => ing.trim().toLowerCase())
                 .filter(ing => ing.length > 0);
     
             // Find the user to check for allergens
             const user = await userModel.findById(userId);
             const userAllergens = user?.alergies || [];
             
-            // Find recipes that contain AT LEAST these ingredients
-            // This means all of our search ingredients must be in the recipe
-            const results = await recipieModel.find({
-                $and: [
-                    // All our ingredients must be present in the recipe
-                    { ingredients: { $all: cleanedIngredients } },
-                    // Exclude recipes with allergens
-                    { ingredients: { $nin: userAllergens } }
-                ]
+            // Get all recipes that don't contain allergens
+            const allRecipes = await recipieModel.find({
+                ingredients: { $nin: userAllergens }
             }).select("-photo");
+            
+            // Filter recipes manually for substring matching
+            const results = allRecipes.filter(recipe => {
+                const recipeIngredients = recipe.ingredients.map(ing => ing.toLowerCase());
+                
+                // Check if each search term matches at least one recipe ingredient
+                return cleanedIngredients.every(searchIngredient => {
+                    return recipeIngredients.some(recipeIngredient => 
+                        recipeIngredient.includes(searchIngredient));
+                });
+            });
             
             res.status(200).send({
                 success: true,
