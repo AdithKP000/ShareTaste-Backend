@@ -107,7 +107,7 @@ export const createRecipieController = async (req, res) => {
 export const getAllRecipieController = async (req,res)=>{
     try {
         const recipies = await recipieModel.find({})
-        .select("-image -ratings -ingredients -instructions -cookingTime -difficulty -category -allergens -dietaryPreferences -ratings -avgRating -approvalStatus -verified -likeCount -likedBy  ")
+        .select("-image -ratings -ingredients -instructions -cookingTime -difficulty  -allergens -dietaryPreferences -ratings -avgRating -approvalStatus -verified -likeCount -likedBy  ")
         .sort({createdAt:-1});
 
         res.status(200).send({

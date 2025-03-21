@@ -60,9 +60,7 @@ router.get('/getphoto',userAuth,getUploadForm)
 //getting all users
 router.get('/allUsers',getAllUserController)
 
-//get all chefs
-router.get("/getAllChef", getAllChefController)
-router.get("/chefimg/:chefId",getChefImgController)
+
 
 //save recipies to user model
 router.put('/saveRecipies/:userId',requireSignIn,saveRecipieController)
@@ -75,7 +73,9 @@ router.post('/getSavedRecipes',getSavedRecipeController)
 router.get('/createChef' ,userAuth,createChefController)
 router.post('/addDocuments',upload.single('image'),uploadDocumentController)
 router.get('/getDocuments/:userId',GetDocumentController);
-
+//get all chefs
+router.get("/getAllChef", getAllChefController)
+router.get("/chefimg/:chefId",getChefImgController)
 
 //admin routes
 router.get('/pendingChefApprovals', pendingApprovalsController)
