@@ -497,4 +497,204 @@ export const searchRecipeController= async( req,res)=>{
             });
         }
     };
+    export const getRecipieByUserNameController = async (req, res) => {
+        try {
+            const { userName } = req.params;
+            
+            // Find users with similar names using regex for partial matching
+            const users = await userModel.find({ 
+                name: { $regex: userName, $options: 'i' } 
+            });
+            
+            if (!users || users.length === 0) {
+                return res.status(200).send({
+                    success: false,
+                    results: [],
+                    message: "No users found with that name",
+                });
+            }
+            
+            // Get the user IDs
+            const userIds = users.map(user => user._id);
+            
+            // Find recipes created by these users
+            const recipes = await recipieModel.find({ author: { $in: userIds } })
+                .select("-image.data") // Avoid sending large image data
+                .populate('author', 'name')
+                .sort({ createdAt: -1 });
+            
+            // Map recipes to include username for frontend display
+            const resultsWithUsername = recipes.map(recipe => ({
+                ...recipe._doc,
+                username: recipe.author ? recipe.author.name : 'Unknown'
+            }));
+            
+            return res.status(200).send({
+                success: true,
+                message: "Recipes fetched successfully",
+                results: resultsWithUsername
+            });
+            
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send({
+                success: false,
+                message: "Error in fetching recipes by user name",
+                results: [],
+                error
+            });
+        }
+    };
+
+    export const searchByCategoryController = async(req, res) => {
+        try {
+            const { keyword } = req.params;
+            const userId = req.user?.id;
     
+            // Find the user to check for allergens
+            const user = await userModel.findById(userId);
+            const userAllergens = user?.alergies || [];
+            
+            // First find the category by name to get its ID
+            const category = await mongoose.model('category').findOne({ 
+                $or: [
+                    { name: { $regex: keyword, $options: 'i' } },
+                    { slug: { $regex: keyword, $options: 'i' } }
+                ]
+            });
+            
+            if (!category) {
+                return res.status(200).send({
+                    success: true,
+                    message: "No recipes found for this category",
+                    results: [],
+                });
+            }
+            
+            // Now use the category ID to find recipes
+            const results = await recipieModel
+                .find({ 
+                    $and: [
+                        { category: category._id }, // Use the ObjectId here
+                        { ingredients: { $nin: userAllergens } }
+                    ]
+                })
+                .select("-photo");
+           
+            res.status(200).send({
+                success: true,
+                message: "Successfully found recipes by category",
+                results,
+            });
+            
+        } catch (error) {
+            console.log(error);
+            res.status(400).send({
+                success: false,
+                message: "Error in search by category API",
+                error,
+            });
+        }
+    };
+    
+    export const searchByExactIngredientsController = async(req, res) => {
+        try {
+            const { ingredients } = req.body;
+            const userId = req.user?.id;
+    
+            if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
+                return res.status(400).send({
+                    success: false,
+                    message: "Please provide at least one ingredient",
+                    results: []
+                });
+            }
+    
+            // Clean ingredients array (remove empty strings, trim whitespace)
+            const cleanedIngredients = ingredients
+                .map(ing => ing.trim())
+                .filter(ing => ing.length > 0);
+    
+            // Find the user to check for allergens
+            const user = await userModel.findById(userId);
+            const userAllergens = user?.alergies || [];
+            
+            // Find recipes that have EXACTLY these ingredients
+            // This means the recipe's ingredients array length must match
+            // and all the ingredients must be in our search list
+            const results = await recipieModel.find({
+                $and: [
+                    // All ingredients must be from our list
+                    { ingredients: { $not: { $elemMatch: { $nin: cleanedIngredients } } } },
+                    // Recipe must use all of our ingredients
+                    { ingredients: { $size: cleanedIngredients.length } },
+                    // Exclude recipes with allergens
+                    { ingredients: { $nin: userAllergens } }
+                ]
+            }).select("-photo");
+            
+            res.status(200).send({
+                success: true,
+                message: "Successfully found recipes with exact ingredients",
+                results,
+            });
+            
+        } catch (error) {
+            console.log(error);
+            res.status(400).send({
+                success: false,
+                message: "Error in exact ingredients search API",
+                error,
+            });
+        }
+    };
+    
+    // Search for recipes containing AT LEAST these ingredients
+    export const searchByPartialIngredientsController = async(req, res) => {
+        try {
+            const { ingredients } = req.body;
+            const userId = req.user?.id;
+    
+            if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
+                return res.status(400).send({
+                    success: false,
+                    message: "Please provide at least one ingredient",
+                    results: []
+                });
+            }
+    
+            // Clean ingredients array (remove empty strings, trim whitespace)
+            const cleanedIngredients = ingredients
+                .map(ing => ing.trim())
+                .filter(ing => ing.length > 0);
+    
+            // Find the user to check for allergens
+            const user = await userModel.findById(userId);
+            const userAllergens = user?.alergies || [];
+            
+            // Find recipes that contain AT LEAST these ingredients
+            // This means all of our search ingredients must be in the recipe
+            const results = await recipieModel.find({
+                $and: [
+                    // All our ingredients must be present in the recipe
+                    { ingredients: { $all: cleanedIngredients } },
+                    // Exclude recipes with allergens
+                    { ingredients: { $nin: userAllergens } }
+                ]
+            }).select("-photo");
+            
+            res.status(200).send({
+                success: true,
+                message: "Successfully found recipes containing the ingredients",
+                results,
+            });
+            
+        } catch (error) {
+            console.log(error);
+            res.status(400).send({
+                success: false,
+                message: "Error in partial ingredients search API",
+                error,
+            });
+        }
+    };
