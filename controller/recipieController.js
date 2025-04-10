@@ -80,19 +80,21 @@ export const createRecipieController = async (req, res) => {
         if (text === "1") {
             savedRecipie = await recipie.save();
             console.log("Recipe saved successfully:", savedRecipie._id);
+            res.status(201).send({
+                success: true,
+                message: "New Recipe created successfully",
+                recipie: savedRecipie
+            });
         } else {
             console.log("The recipe contained some ingredients or instructions that may cause problems. \nTherefore, we were unable to update the database with the provided recipe.");
+
+            res.status(404).send({
+                success:false,
+                message:"The recipe contained some ingredients or instructions that may cause problems. \nTherefore, we were unable to update the database with the provided recipe"
+            })
         }
-
-
-
-
         
-        res.status(201).send({
-            success: true,
-            message: "New Recipe created successfully",
-            recipie: savedRecipie
-        });
+        
     } catch (error) {
         console.error("Recipe creation error:", error);
         res.status(500).send({
