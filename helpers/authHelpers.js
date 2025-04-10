@@ -1,5 +1,4 @@
-import bcrypt  from 'bcryptjs';
-
+import bcrypt from "bcryptjs";
 const hashPassword = async (password) => {
     try {
         const saltRounds=8;
