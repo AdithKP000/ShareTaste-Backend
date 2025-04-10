@@ -1,5 +1,4 @@
-const bcrypt = require('bcryptjs');
-    
+import bcrypt  from 'bcryptjs';
 
 const hashPassword = async (password) => {
     try {

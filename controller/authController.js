@@ -649,7 +649,7 @@ export const uploadImage = async (req, res) => {
         try {
                 const users= await userModel.find()
                  .select("-image -otp -otpExpires -resertPassword -resetPasswordOtpExpires -approvalStatus")
-            
+
                 if(!users){
                     console.log("Unable to fetch all")
                 }
