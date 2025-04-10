@@ -108,6 +108,8 @@ export const getAllRecipieController = async (req,res)=>{
     try {
         const recipies = await recipieModel.find({})
         .select("-image -ratings -ingredients -instructions -cookingTime -difficulty  -allergens -dietaryPreferences -ratings -avgRating -approvalStatus -verified -likeCount -likedBy  ")
+        .populate('author', 'name') 
+        .populate('category', 'name')
         .sort({createdAt:-1});
 
         res.status(200).send({

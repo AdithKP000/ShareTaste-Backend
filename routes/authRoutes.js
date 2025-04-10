@@ -11,7 +11,8 @@ import {
       getSavedRecipeController,
       getChefImgController,
       getSingleUserController,
-      getBannerImg
+      getBannerImg,
+      rejectChefController
     
     } from '../controller/authController.js';
 
@@ -70,7 +71,7 @@ router.put('/removeSavedRecipes/:userId', requireSignIn,removeSavedRecipieContro
 router.post('/getSavedRecipes',getSavedRecipeController)
 
 //chef routes
-router.get('/createChef' ,userAuth,createChefController)
+router.post('/createChef' ,userAuth,createChefController)
 router.post('/addDocuments',upload.single('image'),uploadDocumentController)
 router.get('/getDocuments/:userId',GetDocumentController);
 //get all chefs
@@ -80,6 +81,7 @@ router.get("/chefimg/:chefId",getChefImgController)
 //admin routes
 router.get('/pendingChefApprovals', pendingApprovalsController)
 router.put('/approvePending/:userId', approveChefController)
+router.put('/rejectPending/:userId',rejectChefController)
 
 //get all users
 

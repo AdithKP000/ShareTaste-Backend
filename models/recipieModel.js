@@ -27,7 +27,8 @@ name: {
     },
     category: {
         type: mongoose.Schema.Types.ObjectId,
-        required: true
+        required: true,
+        ref: 'category',
     },
     allergens: {
         type: [String], 

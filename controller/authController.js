@@ -221,10 +221,9 @@ export const loginController = async (req, res) => {
                 alergies:user.alergies,
                 dietaryPreferences:user.dietaryPreferences,
                 isVerified:user.isVerified,
-                image:user.image,
                 approvalStatus:user.approvalStatus,
-                licenseNumber:user.licenseNumber,
-                verified:user.verified,
+                licenseNumber:user.chefLicense.licenseNumber,
+                verified:user.chefLicense.verified,
                 description:user.description,
                 
             },
@@ -524,7 +523,7 @@ export const uploadImage = async (req, res) => {
       }
   
       
-      const { userId } = req.body; // Ensure userId is extracted correctly
+      const { userId } = req.body; 
         console.log(userId);
 
       if(!userId){
@@ -649,7 +648,7 @@ export const uploadImage = async (req, res) => {
     export const getAllUserController = async(req,res)=>{
         try {
                 const users= await userModel.find()
-                 .select("-image,-otp,otpExpires,resertPassword,resetPasswordOtpExpires")
+                 .select("-image -otp -otpExpires -resertPassword -resetPasswordOtpExpires -approvalStatus")
             
                 if(!users){
                     console.log("Unable to fetch all")
@@ -736,28 +735,33 @@ export const getChefImgController = async(req,res)=>{
 export const createChefController = async(req,res)=>{
     try {
         
-        const {userId,licenseNumber}=req.body;
+        const userId = req.body.userId;
+        const licenseNumber = req.body.licenseNumber;
          
-        if(!licenseNumber || !userId)
-        {
-            console.log("License number  or userID is required");
+        if(!licenseNumber || !userId) {
+            return res.status(400).send({
+                success: false,
+                message: "License number and userID are required"
+            });
         }
 
-        const user =await userModel.findById(userId)
+        const user = await userModel.findByIdAndUpdate(userId, {
+            $set: {
+                "chefLicense.licenseNumber": licenseNumber,
+                approvalStatus: "pending",
+            },
+        }, { new: true }).select("-image -bannerImage -password -address");
+
 
         if(!user){
             console.log("User not found");
         }
-        else{
-            user.chefLicense.licenseNumber=licenseNumber
-            user.approvalStatus="pending"
-            await user.save()
-            res.status(200).send({
-                success:true,
-                message:"Approval Request send",
 
-            })
-        }
+        return res.status(200).send({
+            success: true,
+            message: "Approval request sent",
+            user,
+        });
         
     } catch (error) {
         console.log(error)
@@ -876,7 +880,8 @@ export const uploadDocumentController = async (req, res) => {
 
 export const pendingApprovalsController = async (req, res) => {
     try {
-        const users = await userModel.find({ approvalStatus: "pending" });
+        const users = await userModel.find({ approvalStatus: "pending" }).select("-image -otp -otpExpires -resertPassword -resetPasswordOtpExpires -address -description -alergies  -dietaryPreferences -savedRecipies -bannerImage  ")
+
 
         if (!users || users.length === 0) {
             console.log("No pending approval requests found.");
@@ -907,7 +912,7 @@ export const pendingApprovalsController = async (req, res) => {
 export const  approveChefController = async(req,res)=>{
     try {
         const {userId}= req.params;
-        const user = await userModel.findByIdAndUpdate(userId, { approvalStatus: "approved" ,verified:true}, { new: true } );
+        const user = await userModel.findByIdAndUpdate(userId, { approvalStatus: "approved" ,"chefLicense.verified":true,role:2,}, { new: true } );
             if(!user)
             {
                 console.log("Unablr to update user");
@@ -932,6 +937,39 @@ export const  approveChefController = async(req,res)=>{
         res.status(500).send({
             success:false,
             message:"Unable to approve Request",
+            error,
+        })
+    }
+}
+
+
+export const rejectChefController = async(req,res)=>{
+    try {
+        const {userId}= req.params;
+        const user = await userModel.findByIdAndUpdate(userId, { approvalStatus: "rejected" ,"chefLicense.licenseNumber":"000000","chefLicense.document":null}, { new: true } );
+            if(!user)
+            {
+                console.log("Unablr to update user");
+                return res.status(404).send({
+                    success: false,
+                    message: "User not found",
+                });
+            }
+            else{
+            res.status(200).send({
+                success:true,
+                message:"Rejected the chef",
+                user,
+            });
+
+
+        }
+        
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            success:false,
+            message:"Unable to Reject Request",
             error,
         })
     }
@@ -1065,4 +1103,5 @@ export const getSavedRecipeController = async (req, res) => {
         });
     }
 };
+
 

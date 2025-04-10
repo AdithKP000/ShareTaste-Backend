@@ -113,7 +113,7 @@ const userSchema = new mongoose.Schema({
           default: "none" 
         },
     chefLicense: {
-        licenseNumber: { type: String, unique: true, sparse: true }, // Unique for chefs
+        licenseNumber: { type: String,default:'0000000', unique: true, sparse: true }, // Unique for chefs
         document: {  data: Buffer,contentType: String},
         verified: {type: Boolean, default: false }
     },
