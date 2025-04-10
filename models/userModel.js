@@ -110,7 +110,8 @@ const userSchema = new mongoose.Schema({
       approvalStatus: {
          type: String,
           enum: ["none","pending", "approved", "rejected"], 
-          default: "none" 
+          default: "none" ,
+          index:true,
         },
     chefLicense: {
         licenseNumber: { type: String,default:'0000000', unique: true, sparse: true }, // Unique for chefs

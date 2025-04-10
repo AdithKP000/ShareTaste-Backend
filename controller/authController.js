@@ -648,7 +648,11 @@ export const uploadImage = async (req, res) => {
     export const getAllUserController = async(req,res)=>{
         try {
                 const users= await userModel.find()
+<<<<<<< HEAD
                  .select("-image -otp -otpExpires -resertPassword -resetPasswordOtpExpires -approvalStatus")
+=======
+                 .select("-image -otp -otpExpires -resertPassword -resetPasswordOtpExpires")
+>>>>>>> 813c4aabb379c8fcf6aa4ae1aa57ca1dc33b057f
             
                 if(!users){
                     console.log("Unable to fetch all")
@@ -715,7 +719,7 @@ export const getChefImgController = async(req,res)=>{
 
         }   
         const chef= await userModel.findById(chefId)        
-        .select("-otp -otpExpires -resertPassword -resetPasswordOtpExpires -address -description -alergies  -dietaryPreferences -savedRecipies -bannerImage -email  -password  -name ")
+        .select("-otp -otpExpires -resertPassword -resetPasswordOtpExpires -address -description -alergies  -dietaryPreferences -savedRecipies -bannerImage -name -emal -password  ")
 
         if (!chef || !chef.image || !chef.image.data) {
             return res.status(404).json({
