@@ -42,10 +42,24 @@ app.use(cookieParser());  // ✅ Allows access to cookies in requests
 app.use(morgan('dev'));
 
 // Configure CORS properly (if using cookies for authentication)
+const allowedOrigins = [
+  'http://localhost:3000',
+  'https://client-lqzc.onrender.com'
+];
+
 app.use(cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000", // Allow frontend requests
-    credentials: true //  Allow cookies to be sent
+  origin: function (origin, callback) {
+    // allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
 }));
+
 
 // API routes
 app.use('/api/v1/auth', authRoutes);
